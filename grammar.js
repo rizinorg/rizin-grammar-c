@@ -82,7 +82,19 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   rules: {
-    translation_unit: $ => repeat($._top_level_item),
+    translation_unit: $ => choice(
+            seq(
+                '__TYPE_EXPRESSION',
+                $.type_descriptor
+            ),
+            $.vanilla_expression,
+            repeat($._top_level_item)
+    ),
+
+    vanilla_expression: $ => seq(
+       '__VANILLA_C',
+       repeat($._top_level_item)
+    ),
 
     // Top level items are block items with the exception of the expression statement
     _top_level_item: $ => choice(
