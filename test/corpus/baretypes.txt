@@ -1,0 +1,320 @@
+========================================
+Primitive types - int
+========================================
+
+__TYPE_EXPRESSION int
+
+---
+
+(translation_unit (type_descriptor (primitive_type)))
+
+========================================
+Primitive types - uint8_t
+========================================
+
+__TYPE_EXPRESSION uint8_t
+
+---
+
+(translation_unit (type_descriptor (primitive_type)))
+
+========================================
+Primitive types - ssize_t
+========================================
+
+__TYPE_EXPRESSION ssize_t
+
+---
+
+(translation_unit (type_descriptor (primitive_type)))
+
+========================================
+Primitive types - uintptr_t
+========================================
+
+__TYPE_EXPRESSION uintptr_t
+
+---
+
+(translation_unit (type_descriptor (primitive_type)))
+
+========================================
+Primitive types - const size_t
+========================================
+
+__TYPE_EXPRESSION const size_t
+
+---
+
+(translation_unit (type_descriptor (type_qualifier) (primitive_type)))
+
+
+========================================
+Pointer types - int
+========================================
+
+__TYPE_EXPRESSION int *
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator)))
+
+========================================
+Pointer types - uintptr_t
+========================================
+
+__TYPE_EXPRESSION uintptr_t *
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator)))
+
+========================================
+Pointer types - void
+========================================
+
+__TYPE_EXPRESSION void *
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator)))
+
+
+========================================
+Pointer types - void ***
+========================================
+
+__TYPE_EXPRESSION void ***
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator
+(abstract_pointer_declarator (abstract_pointer_declarator)))))
+
+========================================
+Pointer types - const int* (constant type)
+========================================
+
+__TYPE_EXPRESSION const int *
+
+---
+
+(translation_unit (type_descriptor (type_qualifier) (primitive_type) (abstract_pointer_declarator)))
+
+========================================
+Pointer types - int * const (constant pointer)
+========================================
+
+__TYPE_EXPRESSION int * const
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator (type_qualifier))))
+
+========================================
+Pointer types - const int * const (constant type and pointer)
+========================================
+
+__TYPE_EXPRESSION const int * const
+
+---
+
+(translation_unit (type_descriptor (type_qualifier) (primitive_type) (abstract_pointer_declarator
+(type_qualifier))))
+
+========================================
+Array types - int
+========================================
+
+__TYPE_EXPRESSION int [5]
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_array_declarator (number_literal))))
+
+========================================
+Array types - ssize_t
+========================================
+
+__TYPE_EXPRESSION ssize_t[0]
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_array_declarator (number_literal))))
+
+
+========================================
+Array types - variable-length array
+========================================
+
+__TYPE_EXPRESSION uintptr_t []
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_array_declarator)))
+
+========================================
+Array pointer types - int
+========================================
+
+__TYPE_EXPRESSION int* [5]
+
+---
+
+(translation_unit
+  (type_descriptor (primitive_type) (abstract_pointer_declarator (abstract_array_declarator
+  (number_literal)))))
+
+========================================
+Array pointer types - uint64_t
+========================================
+
+__TYPE_EXPRESSION uint64_t* [0]
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_pointer_declarator
+(abstract_array_declarator (number_literal)))))
+
+========================================
+Array pointer types - VLA
+========================================
+
+__TYPE_EXPRESSION uintptr_t* []
+
+---
+
+(translation_unit
+  (type_descriptor (primitive_type) (abstract_pointer_declarator (abstract_array_declarator))))
+
+========================================
+Array pointer types with qualifiers - const
+========================================
+
+__TYPE_EXPRESSION const int* [5]
+
+---
+
+(translation_unit
+  (type_descriptor (type_qualifier) (primitive_type) (abstract_pointer_declarator
+  (abstract_array_declarator (number_literal)))))
+
+========================================
+Array pointer types with qualifiers - volatile
+========================================
+
+__TYPE_EXPRESSION volatile uint8_t* [2]
+
+---
+
+(translation_unit
+  (type_descriptor (type_qualifier) (primitive_type) (abstract_pointer_declarator
+  (abstract_array_declarator (number_literal)))))
+
+========================================
+Array pointer types with qualifiers - VLA
+========================================
+
+__TYPE_EXPRESSION const uintptr_t* []
+
+---
+
+(translation_unit
+  (type_descriptor (type_qualifier) (primitive_type) (abstract_pointer_declarator (abstract_array_declarator))))
+
+========================================
+Complex types
+========================================
+
+__TYPE_EXPRESSION struct s1 *
+
+---
+
+(translation_unit
+  (type_descriptor (struct_specifier (type_identifier)) (abstract_pointer_declarator)))
+
+========================================
+Complex types
+========================================
+
+__TYPE_EXPRESSION struct s2 {
+  int x;
+  float y : 5;
+} [5]
+
+---
+
+(translation_unit
+  (type_descriptor (struct_specifier (type_identifier) (field_declaration_list
+  (field_declaration (primitive_type) (field_identifier)) (field_declaration (primitive_type)
+  (field_identifier) (bitfield_clause (number_literal))))) (abstract_array_declarator
+  (number_literal))))
+
+========================================
+Function types (original) - without names
+========================================
+
+int (*func1)(void *, char[5], long long int);
+
+---
+
+(translation_unit (declaration (primitive_type) (function_declarator (parenthesized_declarator (pointer_declarator (identifier))) (parameter_list (parameter_declaration (primitive_type) (abstract_pointer_declarator)) (parameter_declaration (primitive_type) (abstract_array_declarator (number_literal))) (parameter_declaration (sized_type_specifier (primitive_type)))))))
+
+========================================
+Function types (original) - with names
+========================================
+
+int (*func1)(void * arg1, char arg2[5], long long int arg3);
+
+---
+
+(translation_unit (declaration (primitive_type) (function_declarator (parenthesized_declarator (pointer_declarator (identifier))) (parameter_list (parameter_declaration (primitive_type) (pointer_declarator (identifier))) (parameter_declaration (primitive_type) (array_declarator (identifier) (number_literal))) (parameter_declaration (sized_type_specifier (primitive_type)) (identifier))))))
+
+========================================
+Function types (bare) - pointer without name
+========================================
+
+__TYPE_EXPRESSION int (*)(void *, char[5], long long int)
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_function_declarator (abstract_parenthesized_declarator (abstract_pointer_declarator)) (parameter_list (parameter_declaration (primitive_type) (abstract_pointer_declarator)) (parameter_declaration (primitive_type) (abstract_array_declarator (number_literal))) (parameter_declaration (sized_type_specifier (primitive_type)))))))
+
+========================================
+Function types (bare) - pointer with name
+========================================
+
+__TYPE_EXPRESSION int (*)(void *arg1, char arg2[5], long long int arg3)
+
+---
+
+(translation_unit (type_descriptor (primitive_type) (abstract_function_declarator (abstract_parenthesized_declarator (abstract_pointer_declarator)) (parameter_list (parameter_declaration (primitive_type) (pointer_declarator (identifier))) (parameter_declaration (primitive_type) (array_declarator (identifier) (number_literal))) (parameter_declaration (sized_type_specifier (primitive_type)) (identifier))))))
+
+============================================
+Vanilla C declarations
+============================================
+
+__VANILLA_C struct s1;
+
+struct s2 {
+  int x;
+  float y : 5;
+};
+
+---
+
+(translation_unit
+  (vanilla_expression (struct_specifier
+    name: (type_identifier))
+  (struct_specifier
+    name: (type_identifier)
+    body: (field_declaration_list
+    (field_declaration
+      type: (primitive_type)
+      declarator: (field_identifier))
+    (field_declaration
+      type: (primitive_type)
+      declarator: (field_identifier)
+      (bitfield_clause (number_literal)))))))
+
+
