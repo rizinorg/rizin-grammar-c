@@ -3,11 +3,49 @@
   "word": "identifier",
   "rules": {
     "translation_unit": {
-      "type": "REPEAT",
-      "content": {
-        "type": "SYMBOL",
-        "name": "_top_level_item"
-      }
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "__TYPE_EXPRESSION"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "type_descriptor"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "vanilla_expression"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_top_level_item"
+          }
+        }
+      ]
+    },
+    "vanilla_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "__VANILLA_C"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_top_level_item"
+          }
+        }
+      ]
     },
     "_top_level_item": {
       "type": "CHOICE",
@@ -7249,6 +7287,9 @@
     [
       "_type_specifier",
       "macro_type_specifier"
+    ],
+    [
+      "type_descriptor"
     ],
     [
       "sized_type_specifier"
