@@ -45,6 +45,7 @@ module.exports = grammar({
     [$._type_specifier, $._expression],
     [$._type_specifier, $._expression, $.macro_type_specifier],
     [$._type_specifier, $.macro_type_specifier],
+    [$.type_descriptor],
     [$.sized_type_specifier],
     [$._declaration_modifiers, $.attributed_statement],
     [$._declaration_modifiers, $.attributed_non_case_statement],
@@ -53,7 +54,19 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   rules: {
-    translation_unit: $ => repeat($._top_level_item),
+    translation_unit: $ => choice(
+            seq(
+                '__TYPE_EXPRESSION',
+                $.type_descriptor
+            ),
+            $.vanilla_expression,
+            repeat($._top_level_item)
+    ),
+
+    vanilla_expression: $ => seq(
+       '__VANILLA_C',
+       repeat($._top_level_item)
+    ),
 
     _top_level_item: $ => choice(
       $.function_definition,
