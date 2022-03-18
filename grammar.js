@@ -47,6 +47,8 @@ module.exports = grammar({
     [$._type_specifier, $.macro_type_specifier],
     [$.type_descriptor],
     [$.sized_type_specifier],
+    [$._declaration_modifiers, $.attributed_statement],
+    [$._declaration_modifiers, $.attributed_non_case_statement],
   ],
 
   word: $ => $.identifier,
@@ -71,6 +73,7 @@ module.exports = grammar({
       $.linkage_specification,
       $.declaration,
       $._statement,
+      $.attributed_statement,
       $.type_definition,
       $._empty_declaration,
       $.preproc_if,
@@ -220,20 +223,18 @@ module.exports = grammar({
       ';'
     ),
 
+    _declaration_modifiers: $ => choice(
+      $.storage_class_specifier,
+      $.type_qualifier,
+      $.attribute_specifier,
+      $.attribute_declaration,
+      $.ms_declspec_modifier
+    ),
+
     _declaration_specifiers: $ => seq(
-      repeat(choice(
-        $.storage_class_specifier,
-        $.type_qualifier,
-        $.attribute_specifier,
-        $.ms_declspec_modifier
-      )),
+      repeat($._declaration_modifiers),
       field('type', $._type_specifier),
-      repeat(choice(
-        $.storage_class_specifier,
-        $.type_qualifier,
-        $.attribute_specifier,
-        $.ms_declspec_modifier
-      ))
+      repeat($._declaration_modifiers),
     ),
 
     linkage_specification: $ => seq(
@@ -251,6 +252,18 @@ module.exports = grammar({
       '(',
       $.argument_list,
       ')'
+    ),
+
+    attribute: $ => seq(
+      optional(seq(field('prefix', $.identifier), '::')),
+      field('name', $.identifier),
+      optional($.argument_list)
+    ),
+
+    attribute_declaration: $ => seq(
+      '[[',
+      commaSep1($.attribute),
+      ']]'
     ),
 
     ms_declspec_modifier: $ => seq(
@@ -296,6 +309,7 @@ module.exports = grammar({
     ),
 
     _declarator: $ => choice(
+      $.attributed_declarator,
       $.pointer_declarator,
       $.function_declarator,
       $.array_declarator,
@@ -304,6 +318,7 @@ module.exports = grammar({
     ),
 
     _field_declarator: $ => choice(
+      alias($.attributed_field_declarator, $.attributed_declarator),
       alias($.pointer_field_declarator, $.pointer_declarator),
       alias($.function_field_declarator, $.function_declarator),
       alias($.array_field_declarator, $.array_declarator),
@@ -312,6 +327,7 @@ module.exports = grammar({
     ),
 
     _type_declarator: $ => choice(
+      alias($.attributed_type_declarator, $.attributed_declarator),
       alias($.pointer_type_declarator, $.pointer_declarator),
       alias($.function_type_declarator, $.function_declarator),
       alias($.array_type_declarator, $.array_declarator),
@@ -348,6 +364,18 @@ module.exports = grammar({
     )),
 
 
+    attributed_declarator: $ => prec.right(seq(
+      $._declarator,
+      repeat1($.attribute_declaration),
+    )),
+    attributed_field_declarator: $ => prec.right(seq(
+      $._field_declarator,
+      repeat1($.attribute_declaration),
+    )),
+    attributed_type_declarator: $ => prec.right(seq(
+      $._type_declarator,
+      repeat1($.attribute_declaration),
+    )),
 
     pointer_declarator: $ => prec.dynamic(1, prec.right(seq(
       optional($.ms_based_modifier),
@@ -561,9 +589,13 @@ module.exports = grammar({
       optional(seq('=', field('value', $._expression)))
     ),
 
+    variadic_parameter: $ => seq(
+        '...',
+    ),
+
     parameter_list: $ => seq(
       '(',
-      commaSep(choice($.parameter_declaration, '...')),
+      commaSep(choice($.parameter_declaration, $.variadic_parameter)),
       ')'
     ),
 
@@ -576,6 +608,16 @@ module.exports = grammar({
     ),
 
     // Statements
+
+    attributed_statement: $ => seq(
+      repeat1($.attribute_declaration),
+      $._statement
+    ),
+
+    attributed_non_case_statement: $ => seq(
+      repeat1($.attribute_declaration),
+      $._non_case_statement
+    ),
 
     _statement: $ => choice(
       $.case_statement,
@@ -634,6 +676,7 @@ module.exports = grammar({
       ),
       ':',
       repeat(choice(
+        alias($.attributed_non_case_statement, $.attributed_statement),
         $._non_case_statement,
         $.declaration,
         $.type_definition
@@ -738,7 +781,7 @@ module.exports = grammar({
 
     assignment_expression: $ => prec.right(PREC.ASSIGNMENT, seq(
       field('left', $._assignment_left_expression),
-      choice(
+      field('operator', choice(
         '=',
         '*=',
         '/=',
@@ -750,7 +793,7 @@ module.exports = grammar({
         '&=',
         '^=',
         '|='
-      ),
+      )),
       field('right', $._expression)
     )),
 
@@ -843,7 +886,7 @@ module.exports = grammar({
     field_expression: $ => seq(
       prec(PREC.FIELD, seq(
         field('argument', $._expression),
-        choice('.', '->')
+        field('operator', choice('.', '->'))
       )),
       field('field', $._field_identifier)
     ),
